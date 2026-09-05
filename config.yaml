@@ -1,0 +1,46 @@
+# OCI Data Science Model Artifact Upload Configuration
+
+# OCI Configuration
+compartment_id: '<customer-compartment-ocid>'
+project_id: None  # Set to None or empty string to create a new project
+project_display_name: 'Customer  TEI'
+project_description: 'Demostrates Customer TEI'
+
+# Model Configuration
+display_name: 'teimodel'
+description: 'embed model'
+zip_file_path: '<localdir>/bge-small-en-v1.5.zip'
+
+# Optional: Metadata lists
+custom_metadata_list: []
+defined_metadata_list: []
+
+# Optional: Input/Output schemas
+input_schema_str: ''
+output_schema_str: ''
+
+# Optional: Provenance details
+provenance:
+  repository_url: ''
+  git_branch: ''
+  git_commit: ''
+  script_dir: ''
+  training_script: ''
+  training_id: ''
+
+# Model Deployment Configuration
+deployment_display_name: 'teideploy'
+deployment_description: 'tei deployment on A10'
+deployment_shape: 'VM.GPU.A10.1'
+container_image: 'phx.ocir.io/namespace/tembed:1.9'
+server_port: 8080
+health_check_port: 8080
+entry_point: './entrypoint.sh'
+commands:
+  - '--model-id'
+  - '/opt/ds/model/deployed_model/bge-small-en-v1.5'
+  - '--port'
+  - '8080'
+  - '--max-concurrent-requests'
+  - '32'
+  - '--json-output'
