@@ -47,4 +47,4 @@ The configured TEI endpoint is invoked with `POST <model-deployment-url>/predict
 
 ## Before committing
 
-Do not commit OCI API keys, OCI config files, private image credentials, or customer-specific values you do not intend to disclose. `config.yaml` contains deployment identifiers and local paths; replace them with customer-safe values before publishing.
+Just public information is present.
