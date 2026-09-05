@@ -29,6 +29,50 @@ This package deploys a Hugging Face Text Embeddings Inference (TEI) container to
 4. Update `config.yaml` for the customer tenancy. In particular replace `compartment_id`, `project_id` (or project display settings), `zip_file_path`, and `container_image`.
 5. Ensure the configured OCIR image is accessible to the OCI Data Science deployment and the artifact zip contains the model at the TEI `--model-id` path.
 
+## Verify the model artifact layout
+
+Use the manually uploaded ZIP that contains the complete model. Its top-level directory must be `bge-small-en-v1.5`.
+
+```text
+bge-small-en-v1.5/
+├── config.json
+├── model.safetensors
+├── tokenizer.json
+├── sentence_bert_config.json
+├── config_sentence_transformers.json
+├── modules.json
+└── 1_Pooling/
+    └── config.json
+```
+
+Validate the ZIP before using it:
+
+```bash
+unzip -l bge-small-en-v1.5.zip
+```
+
+The archive must not contain a second ZIP file in place of the model files. Keep the top-level `bge-small-en-v1.5/` directory because the TEI startup command uses that exact path.
+
+## Push the wrapper image and record its immutable digest
+
+The configured container name is `phx.ocir.io/namespace/tembed:1.9`. Log in to the Phoenix OCIR registry and push the new tag:
+
+```bash
+sudo podman login phx.ocir.io
+
+sudo podman push \
+  --digestfile /tmp/tembed-1.9.1.digest \
+  phx.ocir.io/namespace/tembed:1.9.1
+
+cat /tmp/tembed-1.9.1.digest
+```
+
+Save the returned `sha256:...` digest. The new deployment must use the immutable image reference, not only the mutable tag:
+
+```yaml
+container_image: 'phx.ocir.io/namespace/tembed:1.9.1@sha256:<image-digest>'
+```
+
 ## Run
 
 Upload/register the artifact and create a deployment:
@@ -47,4 +91,4 @@ The configured TEI endpoint is invoked with `POST <model-deployment-url>/predict
 
 ## Before committing
 
-Just public information is present.
+Do not commit OCI API keys, OCI config files, private image credentials, or customer-specific values you do not intend to disclose. `config.yaml` contains deployment identifiers and local paths; replace them with customer-safe values before publishing.
